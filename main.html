@@ -1,58 +1,84 @@
+
 <!DOCTYPE html>
-<html lang="ru">
+
+<html>
+
   <head>
-    <title>Cайт кубгу</title>
+    <title>Форма HTML</title>
   </head>
 
   <body>
 
-    <h1>Заголовок первого уровня, 
-      обычно один на странице, часто
-      совпадает с title и является
-      наиболее важным текстом на странице для пользователей и 
-      поисковых систем так как выводится крупно в начале страницы</h1>
+    <h1>Форма</h1>
 
-    <p>Абзац текста. <em>Важный текст</em>.
-      <br /> Перенос строки.
-      <strong>Очень важный текст</strong>.</p>
+    <form action="/"
+      method="POST">
 
-    <img src="image.jpg" alt="Цветок" style="width: 600px;" />
+      <label>
+        Поле ввода ФИО:<br />
+        <input name="field-name-1"
+        placeholder="Введите ваше ФИО" />
+      </label><br />
 
-    <h2>Структура страницы</h2>
+      <label>
+        Поле ввода email:<br />
+        <input name="field-email"
+          type="email"
+          placeholder="Введите вашу почту" />
+      </label><br />
 
-    <div>Блочный элемент</div>
+      <label>
+        Введите дату рождения:<br />
+        <input name="field-date"
+          value="2024-09-09"
+          type="date" />
+      </label><br />
 
-    <span>Строчный элемент</span>
+      <label>
+        Расскажите о себе:<br />
+        <textarea name="field-name-2">начальное значение</textarea>
+      </label><br />
 
-    <h2>Маркированный список</h2>
+      <label>
+        Список (combobox):<br />
+        <select name="field-name-3">
+          <option value="Значение1">Метка1</option>
+          <option value="Значение2" selected="selected">Метка2</option>
+          <option value="Значение3">Метка3</option>
+        </select>
+      </label><br />
 
-    <ul>
-      <li>Элемент 1</li>
-      <li>Элемент 2</li>
-      <li>Элемент 3</li>
-    </ul>
+      <label>
+        Список (listbox с множественным выбором):
+        <br />
+        <select name="field-name-4[]"
+          multiple="multiple">
+          <option value="Значение1">Метка1</option>
+          <option value="Значение2" selected="selected">Метка2</option>
+          <option value="Значение3" selected="selected">Метка3</option>
+        </select>
+      </label><br />
 
-    <h2>Нумерованный список</h2>
+      Радиокнопки:<br />
+      <label><input type="radio" checked="checked"
+        name="radio-group-1" value="Значение1" />
+        Подпись радиокнопки 1</label>
+      <label><input type="radio"
+        name="radio-group-1" value="Значение2" />
+        Подпись радиокнопки 2</label><br />
 
-    <ol>
-      <li>Элемент 1</li>
-      <li>Элемент 2</li>
-      <li>Элемент 3</li>
-    </ol>
-    
-    <h2>Таблица</h2>
+      Чекбокс:<br />
+      <label><input type="checkbox" checked="checked"
+        name="check-1" />
+        Подпись чекбокса ставим справа</label><br />
 
-    <table>
-      <tr>
-        <td>Первая ячейка первой строки</td>
-        <td>Вторая ячейка первой строки</td>
-      </tr>
-      <tr>
-        <td>Первая ячейка второй строки</td>
-        <td>Вторая ячейка второй строки</td>
-      </tr>
-    </table>
+      Кнопка отправки формы,
+      при нажатии заполненные в форму данные
+      отправятся в формате urlencoded методом
+      POST или GET по адресу URL_отправки_данных:
+      <input type="submit" value="Отправить" />
+    </form>
 
   </body>
 
-</html>
+</html> 
