@@ -1,9 +1,87 @@
-#back
-{
-    background-color:lightblue;
-    padding: 23px;
-}
-#razmer
+#logo
 {
     
+    border-radius: 100px;
+    box-shadow: 0 0 0 3px rgb(205 216 241 / 0%), 0 0 20px #3F51B5;
+}
+#logo2
+{
+    width: 150px;
+    padding-top: 30px;
+}
+#header
+{
+    padding: 17px;
+    padding: top 1px;;
+    padding-bottom: 40px;
+    border-radius: 25px;
+    background-color: #cdd8f1;
+    width: auto;
+    height: 180px;
+    border-bottom: ridge;
+    border-color: rgb(46, 40, 40);
+}
+#h1
+{
+    margin-left: 170px;
+    margin-top: 40px;
+}
+#nav
+{    background-color: #adb8d0;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 0 0 3px rgb(173 184 208), 0 0 13px #161414;
+    font-size: 20px;
+    margin-top: 0;
+    
+}
+#body
+{
+    background-color: #00091f;
+}
+#ssilki
+{
+    display: flex; /* Используем flexbox */
+    margin: 20px;
+    padding: 30px;
+    padding-left: 10px;
+    border-radius: 25px;
+    background-color: #cdd8f1;
+   
+    width: auto;
+    border-bottom: ridge;
+    border-color: rgb(0 0 0);
+}
+.text
+{
+    
+    font-size: 30px;  
+}
+.aside
+{
+    box-shadow: 0 0 0 3px rgb(205 216 241 / 0%), 0 0 10px #2a2a2f;
+    border-radius: 10px;
+    background: #7485ac;
+    margin-right: 30px;
+    padding: 10px;
+    width: 240px;
+    float: left;
+    
+}
+#article {
+    margin-right: 240px;
+    display: block;
+   }
+#forma
+{   
+    display: flex; /* Используем flexbox */
+    margin: 20px;
+    padding: 30px;
+    padding-left: 10px;
+    border-radius: 25px;
+    background-color: #cdd8f1;
+   
+    width: auto;
+    border-bottom: ridge;
+    border-color: rgb(0 0 0);
 }
