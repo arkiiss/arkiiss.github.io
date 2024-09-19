@@ -133,3 +133,14 @@ height: 300px;
     border-radius: 15px;
     background-color:  #98aedd;
 }
+#footerstyle
+{
+    border-radius: 15px;
+    height: 60px;
+    width: auto;
+    margin-top: 50px;
+    color: #000000;
+    font-size: 15px;
+    background-color: #768ab2;
+    padding: 20px;
+}
