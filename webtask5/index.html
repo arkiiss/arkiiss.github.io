@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>
+        Задание 5.
+    </title>
+    <script src="calculator.js" rel="script" defer></script>
+</head>
+<body>
+    <div style="display: flex; flex-direction:column; align-items: center; margin-top: 10%;">
+        <h1>Автосалон (Предзаказ дорогих авто)</h1>
+        <form>
+            <input name="count" placeholder="Введите кол-во товара">
+            <select name="product">
+                <option value="470355750">Bugatti Chiron Super Sport 300+ Coupe</option>
+                <option value="490351550">Ferrari 275 GTB/4</option>
+                <option value="629867700">Ford GT40 MkI Road Car</option>
+                <option value="930259150">Mercedes-Benz CLK GTR Roadster</option>
+                <option value="80000">ВАЗ 2107</option>
+            </select>
+            <button onclick="return calccost()">Рассчитать</button>
+            <div style="margin-top: 15px; padding: 2px;display: flex;justify-content: center ; height: 18px; border: ridge; border-color: black;" id="result">
+            </div>
+        </form>
+    </div>
+</body>
+
+
+
+</html>
