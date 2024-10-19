@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>
+        Задание 6.
+    </title>
+    <script src="script.js" rel="script"></script>
+</head>
+<body>
+    <div style="display: flex;justify-content: center;padding: 10px; background-color: lightblue;border: ridge; border-radius: 8%; border-color: rgb(12, 148, 178); align-items: center; margin-top: 100px !important;margin:0 auto; width:330px ">
+        <form style="display: flex; flex-direction: column; ">
+            <input name="count" placeholder="Введите кол-во товара">
+            <select name="product" style="margin-top: 10px;">
+
+                <option style="text-align: center;" value="1">Монитор</option>
+                <option style="text-align: center;" value="2">Компьютерный стол</option>
+                <option style="text-align: center;" value="3">Телевизор</option>
+            </select>
+        
+            <p1 style="margin-top: 15px;">Выберите тип доставки:</p1>
+            <label><input name="rad1" type="radio" value="1">Доставка курьером</label>
+            <label><input name="rad1"type="radio" value="2">Доставка в ПВЗ</label>
+            <label><input name="rad1" type="radio"value="3" checked="checked">Самовывоз</label>
+            <div id="options" style="margin-top:15px;display: none; flex-direction: column; width: 100px;">
+                <p1>Материал:</p1>
+                <label><input name="rad2" type="radio" value="1" checked="checked">ДСП</label>
+                <label><input name="rad2" type="radio" value="2">Дерево</label>
+            </div>
+            <div id="checkboxes" style="display: none; flex-direction:column; margin-top: 15px;">
+                <label><input name="check1" type="checkbox" value="1">Поддержка "Умный дом"</label>
+                <label><input name="check2" type="checkbox" value="2">4К разрешение</label>
+            
+            </div>
+            <div style="margin-top: 15px;background-color:lightgreen; padding: 2px;display: flex;justify-content: center ;border-radius: 10%; height: 18px; border: ridge; border-color: black;" id="result">0 рублей
+            </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
