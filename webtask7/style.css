@@ -1,0 +1,73 @@
+body{
+    display: flex;
+    flex-direction: column;
+    
+    background-color: rgb(128, 142, 156);
+    background-size:75px 100px;
+}
+
+h1{
+    color: rgb(255, 255, 255);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.gallerycontainer{
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carousel{
+    max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carousel .slick-slide{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+img{
+    width: 512px;
+    height: 256px;
+}
+
+@media screen and (max-width: 1024px) {
+    .carousel{
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    img{
+        width: 300px;
+        height: 290px;
+    }
+
+    .carousel .slick-slide{
+        height: 290px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .carousel{
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    img{
+        width: 300px;
+        height: 150px;
+    }
+
+    .carousel .slick-slide{
+        height: 150px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
