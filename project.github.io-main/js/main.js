@@ -65,18 +65,18 @@ $('.slick-slider-three').slick({
 
 $(function() {
 
-    // Показываем подменю при наведении
+  
     $('.dropdown-toggle').on('mouseover', function(e) {
-        $(this) // Элемент, на который наведен курсор
-            .parents('.dropdown') // Ищем ближайшего родителя с классом dropdown
-            .addClass('show'); // Добавляем этому классу класс show
+        $(this) 
+            .parents('.dropdown') 
+            .addClass('show'); 
         $(this)
-            .siblings('.dropdown-menu-wrapper') // Ищем соседа с классом dropdown-menu-wrapper
-            .find('.dropdown-menu') // У класса dropdown-menu-wrapper ищем дочерний элемент с классом dropdown-menu
+            .siblings('.dropdown-menu-wrapper') 
+            .find('.dropdown-menu')
             .addClass('show');
     })
 
-    // Скрываем подменю при наведении
+   
     $('.dropdown-toggle').on('mouseout', function(e) {
         $(this).parents('.dropdown').removeClass('show');
         $(this).siblings('.dropdown-menu-wrapper').find('.dropdown-menu').removeClass('show');
