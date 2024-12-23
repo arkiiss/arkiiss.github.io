@@ -84,7 +84,7 @@ $(function() {
 })
 
 $(function(){
-            $("#form").submit(function(e){
+            $("#edit-submit").submit(function(e){
                 e.preventDefault();
 
                 let name = document.getElementById('edit-field-vashe-imya-0-value').value;
