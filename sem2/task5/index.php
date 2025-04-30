@@ -98,5 +98,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 } else {
     // Отображение формы
-    include 'form.php';
+    include 'contact_form.php';
 }
