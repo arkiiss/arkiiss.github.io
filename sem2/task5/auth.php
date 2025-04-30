@@ -1,5 +1,5 @@
 <?php
-function generateLogin($fullName) {
+function generateLogin($fio) {
     $translit = [
         'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e',
         'ё' => 'yo', 'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k',
@@ -9,7 +9,7 @@ function generateLogin($fullName) {
         'э' => 'e', 'ю' => 'yu', 'я' => 'ya'
     ];
     
-    $login = mb_strtolower($fullName);
+    $login = mb_strtolower($fio);
     $login = strtr($login, $translit);
     $login = preg_replace('/[^a-z0-9]/', '', $login);
     $login .= rand(100, 999);
@@ -17,35 +17,11 @@ function generateLogin($fullName) {
     return $login;
 }
 
-function generatePassword($length = 10) {
+function generatePassword() {
     $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $password = '';
-    for ($i = 0; $i < $length; $i++) {
+    for ($i = 0; $i < 10; $i++) {
         $password .= $chars[rand(0, strlen($chars) - 1)];
     }
     return $password;
-}
-
-function isLoggedIn() {
-    return isset($_SESSION['user_id']);
-}
-
-function login($login, $password) {
-    global $database;
-    
-    $stmt = $database->prepare("SELECT id, password_hash FROM users WHERE login = ?");
-    $stmt->execute([$login]);
-    $user = $stmt->fetch();
-    
-    if ($user && password_verify($password, $user['password_hash'])) {
-        $_SESSION['user_id'] = $user['id'];
-        return true;
-    }
-    
-    return false;
-}
-
-function logout() {
-    session_unset();
-    session_destroy();
 }

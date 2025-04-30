@@ -1,153 +1,102 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
+header("Content-Type: text/html; charset=UTF-8");
 session_start();
-require_once 'auth.php';
+
 require_once 'db.php';
-// Проверка аутентификации
-if (isLoggedIn()) {
-    header('Location: admin.php');
-    exit();
-}
-// Генерация логина и пароля
-$login = generateLogin($values['fullName']);
-$plain_password = generatePassword();
-$password_hash = password_hash($plain_password, PASSWORD_DEFAULT);
+require_once 'auth.php';
 
-// Сохраняем пользователя в БД
-$stmt = $database->prepare("INSERT INTO users (submission_id, login, password_hash) VALUES (?, ?, ?)");
-$stmt->execute([$submissionId, $login, $password_hash]);
+$error = false;
+$log = !empty($_SESSION['login']);
 
-// Показываем пользователю его credentials
-echo "<div class='credentials'>
-        <h3>Ваши данные для входа:</h3>
-        <p><strong>Логин:</strong> $login</p>
-        <p><strong>Пароль:</strong> $plain_password</p>
-        <p>Сохраните эти данные для редактирования вашей анкеты</p>
-      </div>";
-      
-$errors = [];
-$values = [
-    'fullName' => '',
-    'phoneNumber' => '',
-    'userEmail' => '',
-    'eventDate' => '',
-    'gender' => '',
-    'selectedLanguages' => [],
-    'userBio' => '',
-    'agreement' => ''
-];
-
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    // Чтение ошибок из куки
-    foreach ($values as $field => &$value) {
-        if (isset($_COOKIE['error_' . $field])) {
-            $errors[$field] = $_COOKIE['error_' . $field];
-            setcookie('error_' . $field, '', time() - 3600);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['logout_form'])) {
+        // Очистка куки и сессии
+        $cookies = ['fio', 'number', 'email', 'date', 'radio', 'language', 'bio', 'check'];
+        foreach ($cookies as $cookie) {
+            setcookie($cookie.'_value', '', time() - 3600);
+            setcookie($cookie.'_error', '', time() - 3600);
         }
-        if (isset($_COOKIE['value_' . $field])) {
-            $value = is_array(json_decode($_COOKIE['value_' . $field], true))
-                ? json_decode($_COOKIE['value_' . $field], true)
-                : $_COOKIE['value_' . $field];
+        session_destroy();
+        header('Location: ./');
+        exit();
+    }
+
+    // Получение данных формы
+    $fio = $_POST['fio'] ?? '';
+    $number = preg_replace('/\D/', '', $_POST['number'] ?? '');
+    $email = $_POST['email'] ?? '';
+    $date = $_POST['date'] ?? '';
+    $radio = $_POST['radio'] ?? '';
+    $language = $_POST['language'] ?? [];
+    $bio = $_POST['bio'] ?? '';
+    $check = $_POST['check'] ?? '';
+
+    // Валидация
+    function check_field($name, $value, $validation) {
+        global $error;
+        if ($validation($value)) {
+            setcookie($name.'_error', 'Ошибка в поле '.$name, time() + 3600);
+            $error = true;
         }
+        setcookie($name.'_value', is_array($value) ? implode(',', $value) : $value, time() + 3600);
     }
 
-    if (!empty($_GET['submit'])) {
-        echo "<p style='color: green;'>Спасибо, ваши данные успешно сохранены.</p>";
+    // Проверки для каждого поля
+    check_field('fio', $fio, fn($v) => empty($v) || !preg_match('/^[а-яёА-ЯЁ\s\-]+$/u', $v));
+    check_field('number', $number, fn($v) => empty($v) || !preg_match('/^\d{11}$/', $v));
+    // ... другие проверки
+
+    if (!$error) {
+        try {
+            if ($log) {
+                // Редактирование существующей записи
+                $stmt = $db->prepare("UPDATE form_data SET fio=?, number=?, email=?, dat=?, radio=?, bio=? WHERE user_id=?");
+                $stmt->execute([$fio, $number, $email, $date, $radio, $bio, $_SESSION['user_id']]);
+                
+                // Обновление языков
+                $db->prepare("DELETE FROM form_data_lang WHERE id_form=?")->execute([$_SESSION['form_id']]);
+                $stmt = $db->prepare("INSERT INTO form_data_lang (id_form, id_lang) VALUES (?, ?)");
+                foreach ($language as $lang_id) {
+                    $stmt->execute([$_SESSION['form_id'], $lang_id]);
+                }
+            } else {
+                // Новая запись
+                $login = generateLogin($fio);
+                $password = generatePassword();
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+                // Сохранение пользователя
+                $stmt = $db->prepare("INSERT INTO users (login, password) VALUES (?, ?)");
+                $stmt->execute([$login, $password_hash]);
+                $user_id = $db->lastInsertId();
+
+                // Сохранение формы
+                $stmt = $db->prepare("INSERT INTO form_data (user_id, fio, number, email, dat, radio, bio) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$user_id, $fio, $number, $email, $date, $radio, $bio]);
+                $form_id = $db->lastInsertId();
+
+                // Сохранение языков
+                $stmt = $db->prepare("INSERT INTO form_data_lang (id_form, id_lang) VALUES (?, ?)");
+                foreach ($language as $lang_id) {
+                    $stmt->execute([$form_id, $lang_id]);
+                }
+
+                // Показ данных для входа
+                setcookie('login', $login, time() + 3600);
+                setcookie('pass', $password, time() + 3600);
+            }
+
+            setcookie('save', '1', time() + 3600);
+            header('Location: index.php');
+            exit();
+        } catch (PDOException $e) {
+            die('Ошибка базы данных: ' . $e->getMessage());
+        }
+    } else {
+        header('Location: index.php');
+        exit();
     }
-
-    include('contact_form.php');
-    exit();
+} else {
+    // Отображение формы
+    include 'form.php';
 }
-
-// Обработка POST данных
-$values = [
-    'fullName' => $_POST['fullName'] ?? '',
-    'phoneNumber' => preg_replace('/\D/', '', $_POST['phoneNumber'] ?? ''),
-    'userEmail' => $_POST['userEmail'] ?? '',
-    'eventDate' => $_POST['eventDate'] ?? '',
-    'gender' => $_POST['gender'] ?? '',
-    'selectedLanguages' => $_POST['selectedLanguages'] ?? [],
-    'userBio' => $_POST['userBio'] ?? '',
-    'agreement' => $_POST['agreement'] ?? ''
-];
-
-// Валидация
-if (!preg_match('/^[а-яА-ЯёЁ\s]+$/u', $values['fullName']) || strlen($values['fullName']) > 255) {
-    $errors['fullName'] = 'ФИО должно содержать только кириллические буквы и пробелы (макс. 255 символов)';
-}
-
-if (!preg_match('/^\d{11}$/', $values['phoneNumber'])) {
-    $errors['phoneNumber'] = 'Номер телефона должен содержать 11 цифр.';
-}
-
-if (!filter_var($values['userEmail'], FILTER_VALIDATE_EMAIL) || strlen($values['userEmail']) > 255) {
-    $errors['userEmail'] = 'Укажите корректный e-mail (макс. 255 символов).';
-}
-
-if (empty($values['eventDate'])) {
-    $errors['eventDate'] = 'Дата обязательна для заполнения.';
-}
-
-if (empty($values['gender'])) {
-    $errors['gender'] = 'Выберите пол.';
-}
-
-if (empty($values['selectedLanguages']) || !is_array($values['selectedLanguages'])) {
-    $errors['selectedLanguages'] = 'Выберите хотя бы один язык программирования.';
-}
-
-if (strlen($values['userBio']) > 65535) {
-    $errors['userBio'] = 'Биография слишком длинная.';
-}
-
-if (empty($values['agreement'])) {
-    $errors['agreement'] = 'Вы должны согласиться с условиями.';
-}
-
-if (!empty($errors)) {
-    // Сохраняем данные и ошибки в куки
-    foreach ($values as $key => $value) {
-        setcookie('value_' . $key, is_array($value) ? json_encode($value) : $value, time() + 3600, '/');
-    }
-    foreach ($errors as $key => $error) {
-        setcookie('error_' . $key, $error, time() + 3600, '/');
-    }
-    header('Location: index.php');
-    exit();
-}
-
-// Сохраняем значения на 1 год
-foreach ($values as $key => $value) {
-    setcookie('value_' . $key, is_array($value) ? json_encode($value) : $value, time() + 365 * 24 * 60 * 60, '/');
-}
-
-// Подключение к БД и сохранение данных
-try {
-    $dbUser = 'u68788'; 
-    $dbPass = '9724771'; 
-    $database = new PDO('mysql:host=localhost;dbname=u68788', $dbUser, $dbPass,
-        [PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]); 
-
-    $placeholders = implode(',', array_fill(0, count($values['selectedLanguages']), '?'));
-    $languageQuery = $database->prepare("SELECT id, name FROM programming_languages WHERE name IN ($placeholders)");
-    foreach ($values['selectedLanguages'] as $key => $val) {
-        $languageQuery->bindValue($key + 1, $val);
-    }
-    $languageQuery->execute();
-    $languages = $languageQuery->fetchAll(PDO::FETCH_ASSOC);
-
-    $insertData = $database->prepare("INSERT INTO user_submissions (fullName, phoneNumber, userEmail, eventDate, gender, userBio) VALUES (?, ?, ?, ?, ?, ?)");
-    $insertData->execute([$values['fullName'], $values['phoneNumber'], $values['userEmail'], $values['eventDate'], $values['gender'], $values['userBio']]);
-    $submissionId = $database->lastInsertId();
-
-    $insertLang = $database->prepare("INSERT INTO submission_languages (submission_id, language_id) VALUES (?, ?)");
-    foreach ($languages as $lang) {
-        $insertLang->execute([$submissionId, $lang['id']]);
-    }
-} catch (PDOException $e) {
-    print('Ошибка БД: ' . $e->getMessage());
-    exit();
-}
-
-header('Location: index.php?submit=1');
-?>
