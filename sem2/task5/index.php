@@ -2,7 +2,7 @@
 
 $db;
 // подключение к базе данных
-include ('database.php');
+include ('db.php');
 // отправка браузеру кодировку
 header("Content-Type: text/html; charset=UTF-8");
 session_start();
