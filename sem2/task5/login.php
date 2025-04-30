@@ -1,55 +1,59 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
-session_start();
+    header('Content-Type: text/html; charset=UTF-8');
+    session_start();
 
-if (!empty($_SESSION['login'])) {
-    header('Location: index.php');
-    exit();
-}
-
-require_once 'database.php';
-
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $login = $_POST['login'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
-    $stmt = $db->prepare("SELECT id, password FROM users WHERE login = ?");
-    $stmt->execute([$login]);
-    $user = $stmt->fetch();
-    
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['login'] = $login;
-        $_SESSION['user_id'] = $user['id'];
-        
-        // Получаем form_id для пользователя
-        $stmt = $db->prepare("SELECT id FROM form_data WHERE user_id = ?");
-        $stmt->execute([$user['id']]);
-        $_SESSION['form_id'] = $stmt->fetchColumn();
-        
-        header('Location: index.php');
+    if (!empty($_SESSION['login']))
+    {
+        header('Location: ./');
         exit();
-    } else {
-        $error = 'Неверный логин или пароль';
     }
-}
+
+    $error = '';
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST')
+    {
+        require('database.php');
+        $login = $_POST['login'];
+        $password = md5($_POST['password']);
+        try
+        {
+            $stmt = $db->prepare("SELECT id FROM users WHERE login = ? and password = ?");
+            $stmt->execute([$login, $password]);
+            $its = $stmt->rowCount();
+            if($its)
+            {
+                $uid = $stmt->fetchAll(PDO::FETCH_ASSOC)[0]['id'];
+                $_SESSION['login'] = $_POST['login'];
+                $_SESSION['user_id'] = $uid;
+                header('Location: ./');
+            }
+            else
+                $error = 'Неверный логин или пароль';
+        }
+        catch(PDOException $e)
+        {
+            print('Error : ' . $e->getMessage());
+            exit();
+        }
+    }
 ?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Вход</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <title>Задание_5</title>
 </head>
 <body>
-    <form method="POST">
-        <?php if ($error): ?>
-            <div class="error"><?= $error ?></div>
-        <?php endif; ?>
-        <input type="text" name="login" placeholder="Логин" required>
-        <input type="password" name="password" placeholder="Пароль" required>
-        <button type="submit">Войти</button>
+    <form action="" method="post" class="form">
+        <div class="mess" style="color: red;"><?php echo $error; ?></div>
+        <h2>Вход в форму</h2>
+        <div> <input class="input" style="width: 100%;" type="text" name="login" placeholder="Логин"> </div>
+        <div> <input class="input" style="width: 100%;" type="text" name="password" placeholder="Пароль"> </div>
+        <button class="button" type="submit">Войти</button>
     </form>
 </body>
 </html>
