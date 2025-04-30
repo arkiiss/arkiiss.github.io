@@ -12,7 +12,7 @@
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
-        require('database.php');
+        require('db.php');
         $login = $_POST['login'];
         $password = md5($_POST['password']);
         try
