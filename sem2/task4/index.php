@@ -15,12 +15,13 @@ $values = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (!empty($_COOKIE['errors'])) {
-        $errors = unserialize($_COOKIE['errors']);
-        setcookie('errors', '', 100000);
-    }
+    // Чтение ошибок из куки
     foreach ($values as $field => &$value) {
-        if (!empty($_COOKIE['value_' . $field])) {
+        if (isset($_COOKIE['error_' . $field])) {
+            $errors[$field] = $_COOKIE['error_' . $field];
+            setcookie('error_' . $field, '', time() - 3600);
+        }
+        if (isset($_COOKIE['value_' . $field])) {
             $value = is_array(json_decode($_COOKIE['value_' . $field], true))
                 ? json_decode($_COOKIE['value_' . $field], true)
                 : $_COOKIE['value_' . $field];
@@ -35,15 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     exit();
 }
 
-function set_cookie_data($values, $errors = []) {
-    foreach ($values as $key => $value) {
-        setcookie('value_' . $key, is_array($value) ? json_encode($value) : $value, 0);
-    }
-    if (!empty($errors)) {
-        setcookie('errors', serialize($errors), 0);
-    }
-}
-
+// Обработка POST данных
 $values = [
     'fullName' => $_POST['fullName'] ?? '',
     'phoneNumber' => preg_replace('/\D/', '', $_POST['phoneNumber'] ?? ''),
@@ -55,6 +48,7 @@ $values = [
     'agreement' => $_POST['agreement'] ?? ''
 ];
 
+// Валидация
 if (!preg_match('/^[а-яА-ЯёЁ\s]+$/u', $values['fullName']) || strlen($values['fullName']) > 255) {
     $errors['fullName'] = 'ФИО должно содержать только кириллические буквы и пробелы (макс. 255 символов)';
 }
@@ -88,17 +82,23 @@ if (empty($values['agreement'])) {
 }
 
 if (!empty($errors)) {
-    set_cookie_data($values, $errors);
+    // Сохраняем данные и ошибки в куки
+    foreach ($values as $key => $value) {
+        setcookie('value_' . $key, is_array($value) ? json_encode($value) : $value, time() + 3600, '/');
+    }
+    foreach ($errors as $key => $error) {
+        setcookie('error_' . $key, $error, time() + 3600, '/');
+    }
     header('Location: index.php');
     exit();
 }
 
 // Сохраняем значения на 1 год
 foreach ($values as $key => $value) {
-    setcookie('value_' . $key, is_array($value) ? json_encode($value) : $value, time() + 365 * 24 * 60 * 60);
+    setcookie('value_' . $key, is_array($value) ? json_encode($value) : $value, time() + 365 * 24 * 60 * 60, '/');
 }
 
-// Подключение к БД и сохранение данных 
+// Подключение к БД и сохранение данных
 try {
     $dbUser = 'u68788'; 
     $dbPass = '9724771'; 
@@ -107,8 +107,9 @@ try {
 
     $placeholders = implode(',', array_fill(0, count($values['selectedLanguages']), '?'));
     $languageQuery = $database->prepare("SELECT id, name FROM programming_languages WHERE name IN ($placeholders)");
-    foreach ($values['selectedLanguages'] as $key => $val)
+    foreach ($values['selectedLanguages'] as $key => $val) {
         $languageQuery->bindValue($key + 1, $val);
+    }
     $languageQuery->execute();
     $languages = $languageQuery->fetchAll(PDO::FETCH_ASSOC);
 
@@ -126,3 +127,4 @@ try {
 }
 
 header('Location: index.php?submit=1');
+?>
