@@ -62,15 +62,15 @@ if (count($_POST)) {
       <thead>
         <tr>
           <th>id</th>
-          <th>ФИО</th>
-          <th>Телефон</th>
-          <th>Почта</th>
-          <th>Дата рождения</th>
-          <th>Пол</th>
-          <th>Биография</th>
-          <th>ЯП</th>
-          <th>Редактирование</th>
-          <th>Удаление</th>
+          <th>fio</th>
+          <th>number</th>
+          <th>email</th>
+          <th>birth date</th>
+          <th>gender</th>
+          <th>biography</th>
+          <th>Programming Lang</th>
+          <th>edit</th>
+          <th>delete</th>
         </tr>
       </thead>
       <tbody>
@@ -105,8 +105,8 @@ if (count($_POST)) {
 
   <table class="table2">
     <tr>
-      <td>Язык программирования</td>
-      <td>Количество пользователей</td>
+      <td>Programming Lang</td>
+      <td>Count Users</td>
     </tr>
     <tbody>
       <?php

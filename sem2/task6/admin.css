@@ -1,6 +1,6 @@
 body {
     color: white;
-    background-color: #a1a8d6;
+    background-color: #fefefe;
   }
   
   .table1 {
@@ -32,19 +32,19 @@ body {
   }
   
   tbody tr:nth-child(even) {
-    background: #cc4e4e;
+    background: #5fb268;
   }
   
   tbody tr:nth-child(odd) {
-    background: #42575c;
+    background: #2c5b33;
   }
   
   thead {
-    background: #2c0101;
+    background: #022710;
   }
   
   .remove {
-    background: #e22d2d;
+    background: #0e90cc;
     outline: none;
     border: none;
     border-radius: 4px;
